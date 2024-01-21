@@ -1,10 +1,15 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom"
 
 import { Button, Grid, Paper, TextField } from "@mui/material";
 import SaveOutlinedIcon from '@mui/icons-material/SaveOutlined';
 
-const CustomerForm = () => {
+import { ref, push } from 'firebase/database';
+import { database } from '../../config/firebaseConfig';
 
+const CustomerForm = (props) => {
+
+    const navigate = useNavigate();
     const [customer, SetCustomer] = useState({
         name: '',
         lastname: '',
@@ -17,7 +22,7 @@ const CustomerForm = () => {
     const handleChange = (e) => {
         SetCustomer({
             ...customer,
-            [e.targer.name]: e.targer.value,
+            [e.target.name]: e.target.value,
         })
 
         console.log("Guardar");
@@ -26,7 +31,16 @@ const CustomerForm = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        console.log("Guardar");
+        push(ref(database, "/customers"), customer)
+            .then(() => {
+                //redireccionar a clientes
+                navigate("/clientes");
+            })
+            .catch((error) => {
+                console.log(error);
+
+            });
+
     };
 
     return (
@@ -72,7 +86,7 @@ const CustomerForm = () => {
                             fullWidth
                             label="Email"
                             id="outlined-basic"
-                            value={customer.lastname}
+                            value={customer.email}
                             onChange={handleChange}
                             variant="outlined"
                         />
@@ -105,7 +119,7 @@ const CustomerForm = () => {
                     <Grid item xs={12} sx={{ m: 5, textAlign: 'center' }}>
                         <Button
                             type="Submit"
-                            variant="container"
+                            variant="contained"
                             startIcon={<SaveOutlinedIcon />}
                         >
                             Guardar Cliente

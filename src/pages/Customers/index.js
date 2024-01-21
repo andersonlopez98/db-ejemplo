@@ -1,13 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { Button, Grid, Paper } from "@mui/material";
 import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
+import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { Link } from 'react-router-dom';
 
-import { DataGrid} from '@mui/x-data-grid';
+import { DataGrid } from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
 
-import { onValue, ref } from "firebase/database";
+import { onValue, ref, remove } from "firebase/database";
 import { database } from '../../config/firebaseConfig';
+
+const deleteCustomer = (id) => {
+    remove(ref(database, `/customers/${id}`))
+        .then(() => {
+            alert("Cliente Eliminado!");
+        })
+};
 
 const columns = [
     {
@@ -16,23 +25,37 @@ const columns = [
         sortable: false,
         width: 250,
         valueGetter: (params) =>
-        `${params.row.name || ''} ${params.row.lastname || ''}`,
-      },
-      {
+            `${params.row.name || ''} ${params.row.lastname || ''}`,
+    },
+    {
         field: 'email',
         headerName: 'Email',
         width: 220,
-      },
-      {
+    },
+    {
         field: 'phone',
         headerName: 'Teléfono',
         width: 220,
-      },
-      {
+    },
+    {
         field: 'company',
         headerName: 'Empresa',
         width: 220,
-      },
+    },
+    {
+        field: 'id',
+        headerName: 'Acciones',
+        width: 150,
+        renderCell: (data) => (
+            <IconButton
+                color="error"
+                aria-label="delete"
+                onClick={() => { deleteCustomer(data.row.id) }}
+            >
+                <DeleteIcon />
+            </IconButton>
+        )
+    },
 ];
 
 
