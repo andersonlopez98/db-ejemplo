@@ -1,56 +1,70 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Grid, Paper } from "@mui/material";
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Link } from 'react-router-dom';
 
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+import { DataGrid} from '@mui/x-data-grid';
 import Box from '@mui/material/Box';
 
-const columns: GridColDef[] = [
-    { field: 'id', headerName: 'ID', width: 90 },
-    {
-        field: 'firstName',
-        headerName: 'First name',
-        width: 150,
-        editable: true,
-    },
-    {
-        field: 'lastName',
-        headerName: 'Last name',
-        width: 150,
-        editable: true,
-    },
-    {
-        field: 'age',
-        headerName: 'Age',
-        type: 'number',
-        width: 110,
-        editable: true,
-    },
+import { onValue, ref } from "firebase/database";
+import { database } from '../../config/firebaseConfig';
+
+const columns = [
     {
         field: 'fullName',
-        headerName: 'Full name',
-        description: 'This column has a value getter and is not sortable.',
+        headerName: 'Nombre',
         sortable: false,
-        width: 160,
-        valueGetter: (params: GridValueGetterParams) =>
-            `${params.row.firstName || ''} ${params.row.lastName || ''}`,
-    },
+        width: 250,
+        valueGetter: (params) =>
+        `${params.row.name || ''} ${params.row.lastname || ''}`,
+      },
+      {
+        field: 'email',
+        headerName: 'Email',
+        width: 220,
+      },
+      {
+        field: 'phone',
+        headerName: 'Teléfono',
+        width: 220,
+      },
+      {
+        field: 'company',
+        headerName: 'Empresa',
+        width: 220,
+      },
 ];
 
-const rows = [
-    { id: 1, lastName: 'Snow', firstName: 'Jon', age: 14 },
-    { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 31 },
-    { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 31 },
-    { id: 4, lastName: 'Stark', firstName: 'Arya', age: 11 },
-    { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null },
-    { id: 6, lastName: 'Melisandre', firstName: null, age: 150 },
-    { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44 },
-    { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36 },
-    { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65 },
-];
 
 const Customers = () => {
+
+    const [customers, setCustomers] = useState([]);
+
+    useEffect(() => {
+        onValue(
+            ref(database, "customers/"),
+            (snapshot) => {
+                const customersList = [];
+
+                snapshot.forEach(item => {
+                    const customerItem = {
+                        id: item.key,
+                        ...item.val(),
+                    };
+
+                    customersList.push(customerItem);
+
+                });
+
+                setCustomers(customersList);
+
+            },
+            (error) => {
+                console.error(error);
+            }
+        )
+    }, []);
+
     return (
         <Paper
             sx={{
@@ -72,7 +86,7 @@ const Customers = () => {
 
                     <Box sx={{ height: 400, width: '100%' }}>
                         <DataGrid
-                            rows={rows}
+                            rows={customers}
                             columns={columns}
                             initialState={{
                                 pagination: {
