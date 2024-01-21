@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Button, Grid, Paper } from "@mui/material";
-import DeleteIcon from '@mui/icons-material/Delete';
+import AddOutlinedIcon from '@mui/icons-material/AddOutlined';
 import { Link } from 'react-router-dom';
 
 import { DataGrid} from '@mui/x-data-grid';
@@ -77,7 +77,7 @@ const Customers = () => {
 
                 </Grid>
                 <Grid item xs={2}>
-                    <Button variant="outlined" LinkComponent={Link} to="/clientes/agregar" startIcon={<DeleteIcon />}>
+                    <Button variant="outlined" LinkComponent={Link} to="/clientes/agregar" startIcon={<AddOutlinedIcon />}>
                         Agregar
                     </Button>
 
@@ -96,7 +96,6 @@ const Customers = () => {
                                 },
                             }}
                             pageSizeOptions={[5]}
-                            checkboxSelection
                             disableRowSelectionOnClick
                         />
                     </Box>
